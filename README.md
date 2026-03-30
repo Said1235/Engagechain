@@ -220,3 +220,4 @@ genlayer call <contract_address> submit_opinion "My sample proposal"
 genlayer call <contract_address> evaluate_opinion 0
 genlayer call <contract_address> get_full_entry 0
 
+
