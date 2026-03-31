@@ -6,43 +6,47 @@
   <title>EngageChain — AI-Native Opinion Protocol</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
   <div class="noise"></div>
 
-  <!-- ══ WALLET CONNECT MODAL ══════════════════════════════════════════════ -->
+  <!-- ══ WALLET MODAL ════════════════════════════════════════════════════════ -->
   <div class="modal-overlay hidden" id="wallet-modal">
     <div class="modal">
       <div class="modal-header">
         <span class="modal-icon">◈</span>
-        <h2 class="modal-title">Connect to GenLayer</h2>
-        <p class="modal-sub">Click Connect and a fresh testnet account is generated automatically for you. No private key or setup needed.</p>
+        <h2 class="modal-title">Connect Wallet</h2>
+        <p class="modal-sub">Choose how to connect to GenLayer studionet.</p>
       </div>
       <div class="modal-body">
-        
-        <input
-          type="password"
-          id="modal-pk"
-          class="modal-input"
-          placeholder="0x..."
-          autocomplete="off"
-        />
-        
+        <div class="wallet-option" id="modal-auto-btn" onclick="connectAuto()" tabindex="0" role="button">
+          <div class="wallet-option-icon">⚡</div>
+          <div class="wallet-option-info">
+            <div class="wallet-option-title">Auto Connect</div>
+            <div class="wallet-option-desc">Instant testnet wallet — no setup. Auto-funded on studionet.</div>
+          </div>
+          <div class="wallet-option-arrow">→</div>
+        </div>
+        <div class="wallet-divider"><span>or</span></div>
+        <div class="wallet-option" id="modal-mm-btn" onclick="connectMetaMask()" tabindex="0" role="button">
+          <div class="wallet-option-icon">🦊</div>
+          <div class="wallet-option-info">
+            <div class="wallet-option-title">MetaMask</div>
+            <div class="wallet-option-desc">Connect your MetaMask wallet via browser extension (EIP-1193).</div>
+          </div>
+          <div class="wallet-option-arrow">→</div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn-primary btn-full" onclick="confirmConnect()" id="modal-connect-btn">
-          <span class="btn-spinner hidden" id="modal-spinner">⟳</span>
-          Connect
-        </button>
         <button class="btn-ghost" onclick="closeModal()">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- ══ HEADER ═════════════════════════════════════════════════════════════ -->
+  <!-- ══ HEADER ═══════════════════════════════════════════════════════════════ -->
   <header class="header">
     <div class="header-inner">
       <div class="logo">
@@ -51,18 +55,21 @@
         <span class="logo-tag">TESTNET</span>
       </div>
       <nav class="nav">
-        <a href="#submit" class="nav-link">Submit</a>
-        <a href="#lookup" class="nav-link">Lookup</a>
-        <a href="#about" class="nav-link">Protocol</a>
-        <button class="btn-connect" id="btn-connect" onclick="openModal()">
+        <a href="#submit"  class="nav-link">Submit</a>
+        <a href="#lookup"  class="nav-link">Lookup</a>
+        <a href="#about"   class="nav-link">Protocol</a>
+        <button class="btn-connect" onclick="openModal()">
           <span class="btn-dot" id="connect-dot"></span>
           <span id="connect-label">Connect Wallet</span>
+        </button>
+        <button class="btn-disconnect hidden" id="btn-disconnect" onclick="disconnectWallet()">
+          ✕ Disconnect
         </button>
       </nav>
     </div>
   </header>
 
-  <!-- ══ HERO ═══════════════════════════════════════════════════════════════ -->
+  <!-- ══ HERO ══════════════════════════════════════════════════════════════════ -->
   <section class="hero">
     <div class="hero-grid"></div>
     <div class="hero-content">
@@ -99,7 +106,7 @@
       <div class="orb orb-1"></div>
       <div class="orb orb-2"></div>
       <div class="flow-diagram">
-        <div class="flow-node fn-input">
+        <div class="flow-node">
           <span class="fn-icon">✍</span>
           <span class="fn-label">Human Input</span>
         </div>
@@ -107,7 +114,7 @@
           <span class="flow-line"></span>
           <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l8 8-8 8V0z" fill="currentColor"/></svg>
         </div>
-        <div class="flow-node fn-ai">
+        <div class="flow-node">
           <span class="fn-icon">◉</span>
           <span class="fn-label">AI Eval</span>
         </div>
@@ -115,7 +122,7 @@
           <span class="flow-line"></span>
           <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l8 8-8 8V0z" fill="currentColor"/></svg>
         </div>
-        <div class="flow-node fn-consensus">
+        <div class="flow-node">
           <span class="fn-icon">⬡</span>
           <span class="fn-label">Consensus</span>
         </div>
@@ -123,7 +130,7 @@
           <span class="flow-line"></span>
           <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0l8 8-8 8V0z" fill="currentColor"/></svg>
         </div>
-        <div class="flow-node fn-chain">
+        <div class="flow-node">
           <span class="fn-icon">⛓</span>
           <span class="fn-label">On-Chain</span>
         </div>
@@ -131,17 +138,39 @@
     </div>
   </section>
 
-  <!-- ══ SUBMIT ══════════════════════════════════════════════════════════════ -->
+  <!-- ══ SUBMIT ════════════════════════════════════════════════════════════════ -->
   <section class="submit-section" id="submit">
     <div class="section-container">
       <div class="section-label">01 — SUBMIT</div>
       <h2 class="section-title">Submit Your Opinion</h2>
-      <p class="section-sub">Write an opinion, proposal, or dispute. Connect your wallet first to sign the transaction.</p>
+      <p class="section-sub">Write an opinion, proposal, or dispute. Connect your wallet to sign the transaction.</p>
 
       <div class="submit-card">
         <div class="submit-card-inner">
 
-          <!-- Not connected state -->
+          <!-- ── TERMINAL — above the text input ── -->
+          <div class="terminal-panel" id="terminal-panel">
+            <div class="term-header" onclick="toggleTerminal()" style="cursor:pointer">
+              <div class="term-dots">
+                <span class="term-dot td-red"></span>
+                <span class="term-dot td-yellow"></span>
+                <span class="term-dot td-green"></span>
+              </div>
+              <div class="term-title">engagechain — genlayer tx log</div>
+              <div class="term-right">
+                <span class="term-contract">0x5009…CAAcB3</span>
+                <button class="term-toggle-btn" id="term-toggle" title="Toggle terminal">
+                  <span id="term-chevron">▼</span>
+                </button>
+              </div>
+            </div>
+            <div class="term-body" id="term-body">
+              <!-- Seeded by app.js on DOMContentLoaded -->
+            </div>
+          </div>
+          <!-- ── END TERMINAL ── -->
+
+          <!-- Not connected -->
           <div id="not-connected-msg" class="not-connected">
             <span class="nc-icon">◈</span>
             <div>
@@ -151,11 +180,11 @@
             <button class="btn-primary" onclick="openModal()">Connect Wallet</button>
           </div>
 
-          <!-- Connected state -->
+          <!-- Connected form -->
           <div id="connected-form" class="hidden">
             <div class="connected-indicator">
               <span class="dot-green"></span>
-              <span class="connected-addr" id="connected-addr">—</span>
+              <span id="connected-addr">—</span>
             </div>
 
             <div class="field-group">
@@ -168,7 +197,7 @@
                 class="opinion-textarea"
                 placeholder="Write your opinion, proposal, or dispute here…"
                 maxlength="2000"
-                rows="6"
+                rows="5"
                 oninput="updateCharCount()"
               ></textarea>
             </div>
@@ -176,7 +205,7 @@
             <div class="submit-meta">
               <div class="meta-item">
                 <span class="meta-dot dot-pending"></span>
-                <span>Pending → Evaluated → Finalized</span>
+                <span>pending → evaluated → finalized</span>
               </div>
               <div class="meta-item">
                 <span class="meta-icon">◉</span>
@@ -185,7 +214,7 @@
             </div>
 
             <div class="submit-actions">
-              <button class="btn-primary" id="btn-submit" onclick="submitOpinion()">
+              <button class="btn-primary" onclick="submitOpinion()">
                 <span class="btn-spinner hidden" id="submit-spinner">⟳</span>
                 <span id="submit-label">Submit to GenLayer</span>
               </button>
@@ -252,33 +281,23 @@
     </div>
   </section>
 
-  <!-- ══ LOOKUP ══════════════════════════════════════════════════════════════ -->
+  <!-- ══ LOOKUP ════════════════════════════════════════════════════════════════ -->
   <section class="lookup-section" id="lookup">
     <div class="section-container">
       <div class="section-label">02 — LOOKUP</div>
       <h2 class="section-title">Read from Chain</h2>
-      <p class="section-sub">Enter an opinion ID to read any entry recorded in the contract.</p>
+      <p class="section-sub">Enter an opinion ID. The result will be printed in the terminal above.</p>
       <div class="lookup-row">
         <input type="text" id="lookup-id" class="lookup-input" placeholder='Opinion ID (e.g. "0")' />
         <button class="btn-primary" onclick="lookupOpinion()">
           <span class="btn-spinner hidden" id="lookup-spinner">⟳</span>
-          <span id="lookup-label">Read</span>
+          <span id="lookup-label">Read from Chain</span>
         </button>
-      </div>
-      <div class="lookup-result hidden" id="lookup-result">
-        <div class="lookup-card">
-          <div class="lc-row"><span class="lc-key">ID</span><span class="lc-val" id="lc-id">—</span></div>
-          <div class="lc-row"><span class="lc-key">Status</span><span class="lc-val" id="lc-status">—</span></div>
-          <div class="lc-row"><span class="lc-key">Author</span><span class="lc-val monospace small" id="lc-author">—</span></div>
-          <div class="lc-row"><span class="lc-key">Text</span><span class="lc-val" id="lc-text">—</span></div>
-          <div class="lc-row"><span class="lc-key">AI Response</span><span class="lc-val small" id="lc-ai">—</span></div>
-          <div class="lc-row"><span class="lc-key">Verdict</span><span class="lc-val" id="lc-verdict">—</span></div>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- ══ PROTOCOL ════════════════════════════════════════════════════════════ -->
+  <!-- ══ PROTOCOL ══════════════════════════════════════════════════════════════ -->
   <section class="about-section" id="about">
     <div class="section-container">
       <div class="section-label">03 — PROTOCOL</div>
@@ -308,7 +327,7 @@
     </div>
   </section>
 
-  <!-- ══ FOOTER ══════════════════════════════════════════════════════════════ -->
+  <!-- ══ FOOTER ════════════════════════════════════════════════════════════════ -->
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-logo"><span class="logo-mark">◈</span> EngageChain</div>
@@ -323,7 +342,6 @@
     </div>
   </footer>
 
-  <script src="https://unpkg.com/genlayer-js@latest/dist/genlayer-js.umd.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

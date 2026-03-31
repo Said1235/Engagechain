@@ -1,6 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/api/rpc", "destination": "/api/rpc.js" },
-    { "source": "/(.*)", "destination": "/frontend/$1" }
-  ]
-}
