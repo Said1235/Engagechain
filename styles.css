@@ -543,3 +543,26 @@ code, .mono, .monospace, .result-val,
   .section-container { padding: 0 24px; }
   .footer-inner { padding: 0 24px; flex-direction: column; align-items: flex-start; }
 }
+
+/* GitHub nav link */
+.nav-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted, #8896a5);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-github:hover {
+  color: var(--accent, #00e5c3);
+  border-color: rgba(0,229,195,0.3);
+}
+.nav-github svg {
+  flex-shrink: 0;
+}

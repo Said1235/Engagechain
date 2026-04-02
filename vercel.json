@@ -1,6 +1,8 @@
 {
   "version": 2,
   "functions": {
-    "api/rpc.js": { "maxDuration": 60 }
+    "api/rpc.js": {
+      "maxDuration": 60
+    }
   }
 }
